@@ -60,26 +60,22 @@
 
   <script>
     const getExchangeRate = async () => {
-  try {
-    const response = await fetch('https://www.freeforexapi.com/api/live?pairs=RUBVND');
-    const data = await response.json();
+      try {
+        const response = await fetch('https://www.freeforexapi.com/api/live?pairs=RUBVND');
+        const data = await response.json();
 
-    const rubToVnd = data.rates?.RUBVND?.rate;
-    if (!rubToVnd) throw new Error('нет курса RUB→VND');
+        const rubToVnd = data.rates?.RUBVND?.rate;
+        if (!rubToVnd) throw new Error('нет курса RUB→VND');
 
-    // Инвертируем, чтобы получить VND → RUB
-    const vndToRub = 1 / rubToVnd;
-
-    // Учтём комиссию 8%
-    const finalRate = vndToRub * 0.92;
-
-    return finalRate;
-  } catch (error) {
-    console.error('Ошибка получения курса валют:', error);
-    throw new Error('Ошибка получения курса');
-  }
-};
-
+        const vndToRub = 1 / rubToVnd;
+        const finalRate = vndToRub * 0.92; // 8% комиссия
+        return finalRate;
+      } catch (error) {
+        console.error('Ошибка получения курса валют:', error);
+        alert('Ошибка получения курса валют');
+        return null;
+      }
+    };
 
     const vndInput = document.getElementById('vndAmount');
     const convertBtn = document.getElementById('convertBtn');
