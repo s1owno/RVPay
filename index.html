@@ -2,81 +2,35 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Оплата</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 500px;
-      margin: auto;
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-    }
-    pre {
-      background: #f2f2f2;
-      padding: 10px;
-    }
-    #result {
-      margin-top: 20px;
-      display: none;
-    }
-    #status {
-      margin-top: 10px;
-      color: green;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Конвертер VND → RUB</title>
 </head>
 <body>
-  <h2>Оплата услуги</h2>
+  <div>
+    <label>Сумма в VND:</label>
+    <input type="number" id="vndAmount" placeholder="Введите сумму" />
+  </div>
 
-  <label>Сумма в VND:</label>
-  <input type="number" id="vndAmount" placeholder="Введите сумму" />
+  <div>
+    <button id="convertBtn">Посчитать в RUB</button>
+  </div>
 
-  <button id="convertBtn">Посчитать в RUB</button>
-
-  <div id="result">
-    <p>Сумма в рублях: <strong><span id="rubAmount"></span> ₽</strong></p>
-
-    <p><strong>Реквизиты для оплаты:</strong></p>
-    <pre id="paymentDetails">
-Получатель: ООО "Пример"
-Счёт: 1234567890
-Банк: Примербанк
-ИНН: 123456789
-Назначение: Оплата услуг
-    </pre>
-
+  <div id="result" style="display:none; margin-top:10px;">
+    <p>Сумма в рублях: <span id="rubAmount"></span> ₽</p>
+    
+    <p>Реквизиты для оплаты:</p>
+    <pre id="paymentDetails">Здесь будут твои реквизиты...</pre>
+    
     <label>Загрузите чек оплаты:</label>
     <input type="file" id="paymentReceipt" accept="image/*" />
-
+    
     <button id="sendBtn">Отправить оплату</button>
-
+    
     <p id="status"></p>
   </div>
 
   <script>
-    async function getVndToRubRate() {
-      try {
-        const response = await fetch('https://open.er-api.com/v6/latest/RUB');
-        const data = await response.json();
-        if (data.result !== "success" || !data.rates.VND) {
-          throw new Error("Не удалось получить курс RUB→VND");
-        }
-
-        const rubToVnd = data.rates.VND;
-        const vndToRub = 1 / rubToVnd;
-        const rateWithCommission = vndToRub * 0.92; // 8% комиссия
-        return rateWithCommission;
-      } catch (error) {
-        alert("Ошибка получения курса валют. Попробуйте позже.");
-        console.error(error);
-        return null;
-      }
-    }
+    const exchangeRate = 0.003; // пример курса VND → RUB (нужно заменить на актуальный)
 
     const vndInput = document.getElementById('vndAmount');
     const convertBtn = document.getElementById('convertBtn');
@@ -87,18 +41,15 @@
     const statusText = document.getElementById('status');
     const receiptInput = document.getElementById('paymentReceipt');
 
-    convertBtn.onclick = async () => {
+    convertBtn.onclick = () => {
       const vnd = parseFloat(vndInput.value);
       if (!vnd || vnd <= 0) {
         alert('Введите корректную сумму в VND');
         return;
       }
-
-      const rate = await getVndToRubRate();
-      if (!rate) return;
-
-      const rub = (vnd * rate).toFixed(2);
+      const rub = (vnd * exchangeRate).toFixed(2);
       rubAmountSpan.textContent = rub;
+      paymentDetails.textContent = `Получатель: ООО "Пример"\nСчёт: 1234567890\nБанк: Примербанк\nИНН: 123456789\n...`; // Замени на свои реквизиты
       resultBlock.style.display = 'block';
       statusText.textContent = '';
     };
@@ -125,7 +76,7 @@
 
       statusText.textContent = 'Отправка...';
 
-      fetch('https://твой_сервер/api/payment', {
+      fetch('https://твоя_домен_или_ip/api/payment', { // замени на свой API
         method: 'POST',
         body: formData,
       })
