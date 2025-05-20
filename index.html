@@ -32,19 +32,20 @@
   <script>
     // Функция для получения курса VND → RUB с exchangerate.host (бесплатный API)
     async function getExchangeRate() {
-      try {
-        const response = await fetch('https://api.exchangerate.host/latest?base=VND&symbols=RUB');
-        const data = await response.json();
-        if (data && data.rates && data.rates.RUB) {
-          return data.rates.RUB;
-        } else {
-          throw new Error('Не удалось получить курс');
-        }
-      } catch (error) {
-        alert('Ошибка получения курса валют: ' + error.message);
-        return null;
-      }
+  try {
+    const response = await fetch('https://api.exchangerate.host/latest?base=VND&symbols=RUB');
+    const data = await response.json();
+    console.log('Ответ API:', data); // <-- логируем ответ
+    if (data && data.rates && data.rates.RUB) {
+      return data.rates.RUB;
+    } else {
+      throw new Error('Не удалось получить курс: нет поля rates.RUB');
     }
+  } catch (error) {
+    alert('Ошибка получения курса валют: ' + error.message);
+    return null;
+  }
+}
 
     const vndInput = document.getElementById('vndAmount');
     const convertBtn = document.getElementById('convertBtn');
