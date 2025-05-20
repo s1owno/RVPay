@@ -97,7 +97,7 @@
         return;
       }
 
-      const exchangeRate = await getExchangeRateWithCommission();
+      const exchangeRate = await getExchangeRate();
       if (!exchangeRate) return;
 
       const rub = (vnd * exchangeRate).toFixed(2);
